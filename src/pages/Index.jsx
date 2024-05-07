@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, Container, Flex, Heading, Input, List, ListItem, Text, useToast } from '@chakra-ui/react';
+import { Box, Button, Checkbox, Container, Flex, Heading, Input, List, ListItem, Text, useToast } from '@chakra-ui/react';
 
 const Index = () => {
   const [tasks, setTasks] = useState([]);
@@ -17,12 +17,22 @@ const Index = () => {
       });
       return;
     }
-    setTasks([...tasks, input]);
+    setTasks([...tasks, { text: input, completed: false }]);
     setInput('');
   };
 
   const deleteTask = (index) => {
     const newTasks = tasks.filter((_, i) => i !== index);
+    setTasks(newTasks);
+  };
+
+  const toggleTaskCompletion = (index) => {
+    const newTasks = tasks.map((task, i) => {
+      if (i === index) {
+        return { ...task, completed: !task.completed };
+      }
+      return task;
+    });
     setTasks(newTasks);
   };
 
@@ -45,7 +55,10 @@ const Index = () => {
         <List spacing={3}>
           {tasks.map((task, index) => (
             <ListItem key={index} d="flex" justifyContent="space-between" alignItems="center">
-              <Text>{task}</Text>
+              <Flex alignItems="center">
+                <Checkbox mr={2} onChange={() => toggleTaskCompletion(index)} />
+                <Text as={task.completed ? 's' : undefined}>{task.text}</Text>
+              </Flex>
               <Button colorScheme="red" onClick={() => deleteTask(index)}>Delete</Button>
             </ListItem>
           ))}
